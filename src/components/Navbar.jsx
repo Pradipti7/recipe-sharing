@@ -6,7 +6,6 @@ function Navbar() {
         <link className="navbar-brand fw-bold" to="/">
           🍴 RecipeHub
         </link>
-
         <button
           className="navbar-toggler"
           type="button"
