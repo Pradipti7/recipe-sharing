@@ -33,6 +33,7 @@ function Recipes() {
       <div className="mb-4">
         {recipes.map((recipe, index) => (
           <RecipeCard key={index} recipe={recipe} />
+            
         ))}
       </div>
     </div>

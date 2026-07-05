@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
+
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-sucess">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-success">
       <div className="container">
-        <link className="navbar-brand fw-bold" to="/">
+        <Link className="navbar-brand fw-bold" to="/">
           🍴 RecipeHub
-        </link>
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -16,16 +17,16 @@ function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="menu">
           <ul className="navbar-nav ms-auto">
-            <li className="nav-items">
-              <link className="nav-link" to="/recipes">
+            <li className="nav-item">
+              <Link className="nav-link" to="/recipes">
                 Recipes
-              </link>
+              </Link>
             </li>
             <li className="nav-item">
-              <link className="nav-link" tp="/add">
+              <Link className="nav-link" to="/add">
                 {" "}
                 Add Recipe
-              </link>
+              </Link>
             </li>
           </ul>
         </div>
