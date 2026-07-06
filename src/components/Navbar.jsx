@@ -3,51 +3,42 @@ import { Link } from "react-router-dom";
 function Navbar() {
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark shadow-sm"
+      className="navbar shadow-sm py-3"
       style={{ backgroundColor: "#46603D" }}
     >
-      <div className="container">
+      <div className="container d-flex justify-content-between align-items-center">
         {/* Logo */}
         <Link
-          className="navbar-brand fw-bold fs-3"
+          className="navbar-brand fw-bold fs-3 m-0"
           to="/"
-          style={{ color: "#F3F6EE" }}
+          style={{
+            color: "#F3F6EE",
+            textDecoration: "none",
+          }}
         >
           🍴 RecipeHub
         </Link>
 
-        {/* Hamburger button */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#menu"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
         {/* Navigation Links */}
-        <div className="collapse navbar-collapse justify-content-end" id="menu">
-          <ul className="navbar-nav">
-            <li className="nav-item">
-              <Link className="nav-link text-light" to="/">
-                Home
-              </Link>
-            </li>
+        <ul className="navbar-nav d-flex flex-row gap-4 mb-0">
+          <li className="nav-item">
+            <Link className="nav-link text-light fw-semibold" to="/">
+              Home
+            </Link>
+          </li>
 
-            <li className="nav-item">
-              <Link className="nav-link text-light" to="/recipes">
-                Recipes
-              </Link>
-            </li>
+          <li className="nav-item">
+            <Link className="nav-link text-light fw-semibold" to="/recipes">
+              Recipes
+            </Link>
+          </li>
 
-            <li className="nav-item">
-              <Link className="nav-link text-light" to="/add">
-                Add Recipe
-              </Link>
-            </li>
-          </ul>
-        </div>
+          <li className="nav-item">
+            <Link className="nav-link text-light fw-semibold" to="/add">
+              Add Recipe
+            </Link>
+          </li>
+        </ul>
       </div>
     </nav>
   );
