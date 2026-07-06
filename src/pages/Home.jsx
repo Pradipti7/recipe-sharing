@@ -2,13 +2,25 @@ import { Link } from "react-router-dom";
 function Home() {
   return (
     <div>
-      <section className="bg-sucess text-white text-center py-5">
+      <section className="text-center py-5" 
+      style={{
+        backgroundColor: "#46603D",
+        color: "#F3F6EE",
+        minHeight:"75vh",
+        display: "flex",
+        alignments:"center"
+
+      }}>
         <div className="container">
-          <h1 className="display-3 fw-bold">Discover Amazing Recipes</h1>
-          <p className="lead"> Share your favorite dishes with the world </p>
-          <Link to="/recipes" className="btn btn-light btn-lg mt-3">
-            {" "}
-            Browse Recipes{" "}
+          <h1 className="display-2 fw-bold">Discover Amazing Recipes</h1>
+          <p className="lead mt-3"> Share your favorite dishes with the world </p>
+          <Link to="/recipes" className="btn btn-lg mt-4"
+          style={{
+            background:"#E8A33D", 
+            color: "#2B211D",
+            border: "none"
+          }}>
+            Browse Recipes
           </Link>
         </div>
       </section>

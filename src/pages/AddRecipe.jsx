@@ -17,6 +17,13 @@ function AddRecipe() {
     console.log(recipe);
     alert("Recipe Submitted! ");
   };
-  return <div clasName="container py-5"></div>;
+  return;
+  <div
+    clasName="card border-0 shadow"
+    style={{
+      borderRadius: "20px",
+      background: "#fff",
+    }}
+  ></div>;
 }
 export default AddRecipe;
