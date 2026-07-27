@@ -1,6 +1,9 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function AddRecipe() {
+  const navigate = useNavigate();
   const [recipe, setRecipe] = useState({
     title: "",
     image: "",
@@ -8,6 +11,7 @@ function AddRecipe() {
     ingredients: "",
     steps: "",
   });
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setRecipe({
@@ -18,13 +22,25 @@ function AddRecipe() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(recipe);
-    alert("Recipe Submitted!");
+    setSubmitting(true);
+
+    axios
+      .post("/api/recipes", recipe)
+      .then(() => {
+        alert("Recipe Submitted!");
+        navigate("/recipes");
+      })
+      .catch((err) => {
+        alert("Failed to submit recipe");
+        console.error(err);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
     <div className="container py-5">
-
       <div
         className="card border-0 shadow mx-auto"
         style={{
@@ -32,15 +48,10 @@ function AddRecipe() {
           borderRadius: "20px",
         }}
       >
-
         <div className="card-body p-4">
-
-          <h2 className="text-center mb-4">
-            Add New Recipe
-          </h2>
+          <h2 className="text-center mb-4">Add New Recipe</h2>
 
           <form onSubmit={handleSubmit}>
-
             <input
               type="text"
               name="title"
@@ -48,6 +59,7 @@ function AddRecipe() {
               className="form-control mb-3"
               value={recipe.title}
               onChange={handleChange}
+              required
             />
 
             <input
@@ -89,20 +101,17 @@ function AddRecipe() {
             <button
               type="submit"
               className="btn w-100"
+              disabled={submitting}
               style={{
                 background: "#46603D",
                 color: "white",
               }}
             >
-              Submit Recipe
+              {submitting ? "Submitting..." : "Submit Recipe"}
             </button>
-
           </form>
-
         </div>
-
       </div>
-
     </div>
   );
 }

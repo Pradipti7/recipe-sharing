@@ -1,4 +1,3 @@
-
 function RecipeCard({ recipe }) {
   return (
     <div
@@ -10,7 +9,7 @@ function RecipeCard({ recipe }) {
       }}
     >
       <img
-        src={recipe.image}
+        src={recipe.image || "https://via.placeholder.com/500x300?text=No+Image"}
         alt={recipe.title}
         className="card-img-top"
         style={{
@@ -20,7 +19,6 @@ function RecipeCard({ recipe }) {
       />
 
       <div className="card-body d-flex flex-column">
-
         <h4
           className="fw-bold"
           style={{ color: "#2B211D" }}
@@ -46,7 +44,6 @@ function RecipeCard({ recipe }) {
         >
           View Recipe
         </button>
-
       </div>
     </div>
   );
