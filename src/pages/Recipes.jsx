@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import RecipeCard from "../components/RecipeCard";
 
@@ -39,7 +40,16 @@ function Recipes() {
 
   return (
     <div className="container py-9">
-      <h2 className="mb-4">Popular Recipes</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0">Popular Recipes</h2>
+        <Link
+          to="/add"
+          className="btn"
+          style={{ background: "#46603D", color: "white", borderRadius: "10px" }}
+        >
+          + Add Recipe
+        </Link>
+      </div>
       <div className="row">
         {recipes.map((recipe) => (
           <div className="col-md-6 col-lg-3 mb-4" key={recipe.id}>
