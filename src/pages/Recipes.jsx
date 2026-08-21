@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import RecipeCard from "../components/RecipeCard";
 
@@ -7,6 +7,8 @@ function Recipes() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("q") || "";
 
   useEffect(() => {
     axios
@@ -21,6 +23,14 @@ function Recipes() {
         console.error(err);
       });
   }, []);
+
+  const filteredRecipes = query
+    ? recipes.filter(
+        (r) =>
+          r.title.toLowerCase().includes(query.toLowerCase()) ||
+          (r.category && r.category.toLowerCase().includes(query.toLowerCase()))
+      )
+    : recipes;
 
   if (loading) {
     return (
@@ -41,7 +51,16 @@ function Recipes() {
   return (
     <div className="container py-9">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Popular Recipes</h2>
+        <div>
+          <h2 className="mb-0">
+            {query ? `Results for "${query}"` : "Popular Recipes"}
+          </h2>
+          {query && (
+            <p className="text-muted mt-1 mb-0">
+              {filteredRecipes.length} recipe{filteredRecipes.length !== 1 ? "s" : ""} found
+            </p>
+          )}
+        </div>
         <Link
           to="/add"
           className="btn"
@@ -50,13 +69,22 @@ function Recipes() {
           + Add Recipe
         </Link>
       </div>
-      <div className="row">
-        {recipes.map((recipe) => (
-          <div className="col-md-6 col-lg-3 mb-4" key={recipe.id}>
-            <RecipeCard recipe={recipe} />
-          </div>
-        ))}
-      </div>
+      {filteredRecipes.length === 0 ? (
+        <div className="text-center py-5">
+          <p className="text-muted">No recipes found for "{query}".</p>
+          <Link to="/" className="btn" style={{ background: "#46603D", color: "white", borderRadius: "10px" }}>
+            Back to Home
+          </Link>
+        </div>
+      ) : (
+        <div className="row">
+          {filteredRecipes.map((recipe) => (
+            <div className="col-md-6 col-lg-3 mb-4" key={recipe.id}>
+              <RecipeCard recipe={recipe} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import { FaPizzaSlice, FaUtensils, FaHeart, FaStar, FaQuoteLeft } from "react-icons/fa";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaPizzaSlice, FaUtensils, FaHeart, FaStar, FaQuoteLeft, FaSearch } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";
 import burgerImg from "../images/burger.jpeg";
 import pastaImg from "../images/pasta.webp";
@@ -20,6 +21,16 @@ const testimonials = [
 ];
 
 function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/recipes?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <div className="home-page">
 
@@ -43,6 +54,17 @@ function Home() {
               Share a Recipe
             </Link>
           </div>
+          <form className="hero-search" onSubmit={handleSearch}>
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search for recipes, cuisines, ingredients..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="hero-search-input"
+            />
+            <button type="submit" className="hero-search-btn">Search</button>
+          </form>
           <div className="hero-stats">
             <div className="stat-item">
               <strong>500+</strong> <span>Recipes</span>
