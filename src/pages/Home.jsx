@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPizzaSlice, FaUtensils, FaHeart, FaStar, FaQuoteLeft, FaSearch } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";
@@ -6,6 +6,7 @@ import burgerImg from "../images/burger.jpeg";
 import pastaImg from "../images/pasta.webp";
 import momoImg from "../images/momo.webp";
 import pizzaImg from "../images/pizza.jpeg";
+import FavoritesContext from "../context/FavoritesContext";
 
 const popularRecipes = [
   { id: 1, title: "Classic Margherita", category: "Italian", image: pizzaImg, time: "30 min" },
@@ -23,6 +24,7 @@ const testimonials = [
 function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { toggleFavorite, isFavorite } = useContext(FavoritesContext);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -128,24 +130,47 @@ function Home() {
             <h2 className="section-title">Popular Recipes</h2>
           </div>
           <div className="recipes-grid">
-            {popularRecipes.map((recipe) => (
-              <div key={recipe.id} className="recipe-showcase-card">
-                <div className="recipe-image-wrapper">
-                  <img src={recipe.image} alt={recipe.title} className="recipe-image" />
-                  <span className="recipe-category">{recipe.category}</span>
-                </div>
-                <div className="recipe-info">
-                  <h5 className="recipe-title">{recipe.title}</h5>
-                  <div className="recipe-meta">
-                    <span className="recipe-time">{recipe.time}</span>
-                    <div className="recipe-rating">
-                      <FaStar size={14} color="#E8A33D" />
-                      <span>4.8</span>
+            {popularRecipes.map((recipe) => {
+              const liked = isFavorite(recipe.id);
+              return (
+                <div key={recipe.id} className="recipe-showcase-card">
+                  <div className="recipe-image-wrapper">
+                    <img src={recipe.image} alt={recipe.title} className="recipe-image" />
+                    <span className="recipe-category">{recipe.category}</span>
+                    <button
+                      onClick={() => toggleFavorite(recipe.id)}
+                      style={{
+                        position: "absolute",
+                        top: "12px",
+                        right: "12px",
+                        background: "rgba(255,255,255,0.9)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "36px",
+                        height: "36px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                      }}
+                    >
+                      <FaHeart size={16} color={liked ? "#D64B3E" : "#ccc"} fill={liked ? "#D64B3E" : "none"} />
+                    </button>
+                  </div>
+                  <div className="recipe-info">
+                    <h5 className="recipe-title">{recipe.title}</h5>
+                    <div className="recipe-meta">
+                      <span className="recipe-time">{recipe.time}</span>
+                      <div className="recipe-rating">
+                        <FaStar size={14} color="#E8A33D" />
+                        <span>4.8</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="text-center mt-4">
             <Link to="/recipes" className="btn-hero-primary">

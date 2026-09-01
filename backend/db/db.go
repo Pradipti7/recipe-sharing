@@ -99,6 +99,19 @@ func runMigrations() error {
 	if err != nil {
 		return fmt.Errorf("create recipes table: %w", err)
 	}
+
+	_, err = Pool.Exec(context.Background(), `
+		CREATE TABLE IF NOT EXISTS ratings (
+			id SERIAL PRIMARY KEY,
+			recipe_id INTEGER NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+			rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+			created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("create ratings table: %w", err)
+	}
+
 	fmt.Println("Migrations complete")
 	return nil
 }

@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { FaArrowLeft, FaListUl, FaBookOpen } from "react-icons/fa";
+import { FaArrowLeft, FaListUl, FaBookOpen, FaHeart, FaStar } from "react-icons/fa";
+import FavoritesContext from "../context/FavoritesContext";
 import pizzaImg from "../images/pizza.jpeg";
 import momoImg from "../images/momo.webp";
 import pastaImg from "../images/pasta.webp";
@@ -78,10 +79,43 @@ const defaultRecipes = [
   },
 ];
 
+function StarRating({ rating, onRate, interactive }) {
+  const [hovered, setHovered] = useState(0);
+
+  return (
+    <div style={{ display: "flex", gap: "4px" }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => interactive && onRate(star)}
+          onMouseEnter={() => interactive && setHovered(star)}
+          onMouseLeave={() => interactive && setHovered(0)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: interactive ? "pointer" : "default",
+            padding: "2px",
+            fontSize: "24px",
+            color: star <= (hovered || rating) ? "#E8A33D" : "#ddd",
+            transition: "color 0.15s",
+          }}
+        >
+          <FaStar />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function RecipeDetail() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [ratingData, setRatingData] = useState({ avg_rating: 0, rating_count: 0 });
+  const [userRating, setUserRating] = useState(0);
+  const [submittingRating, setSubmittingRating] = useState(false);
+  const { toggleFavorite, isFavorite } = useContext(FavoritesContext);
 
   useEffect(() => {
     let cancelled = false;
@@ -92,6 +126,7 @@ function RecipeDetail() {
       .then((res) => {
         if (!cancelled) {
           setRecipe(res.data);
+          setRatingData({ avg_rating: res.data.avg_rating || 0, rating_count: res.data.rating_count || 0 });
           setLoading(false);
         }
       })
@@ -103,11 +138,38 @@ function RecipeDetail() {
         }
       });
 
+    axios
+      .get(`/api/recipes/${id}/rating`, { signal: controller.signal })
+      .then((res) => {
+        if (!cancelled) setRatingData(res.data);
+      })
+      .catch(() => {});
+
     return () => {
       cancelled = true;
       controller.abort();
     };
   }, [id]);
+
+  const handleRate = (rating) => {
+    if (submittingRating) return;
+    setSubmittingRating(true);
+    setUserRating(rating);
+
+    axios
+      .post(`/api/recipes/${id}/rating`, { rating })
+      .then((res) => {
+        setRatingData(res.data);
+        setSubmittingRating(false);
+      })
+      .catch(() => {
+        setSubmittingRating(false);
+        setRatingData((prev) => ({
+          avg_rating: rating,
+          rating_count: prev.rating_count + 1,
+        }));
+      });
+  };
 
   if (loading) {
     return (
@@ -136,6 +198,8 @@ function RecipeDetail() {
     ? recipe.steps.split("\n").map((s) => s.trim()).filter(Boolean)
     : [];
 
+  const liked = isFavorite(recipe.id);
+
   return (
     <div className="recipe-detail-page">
       <div className="recipe-detail-hero" style={{ backgroundImage: `url(${recipe.image || "https://via.placeholder.com/800x450?text=No+Image"})` }}>
@@ -148,12 +212,57 @@ function RecipeDetail() {
             {recipe.category && <span className="recipe-detail-category">{recipe.category}</span>}
             <h1 className="recipe-detail-title">{recipe.title}</h1>
             <p className="recipe-detail-desc">{recipe.description}</p>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "16px", flexWrap: "wrap" }}>
+              <button
+                onClick={() => toggleFavorite(recipe.id)}
+                style={{
+                  background: liked ? "#D64B3E" : "rgba(255,255,255,0.2)",
+                  border: "2px solid rgba(255,255,255,0.5)",
+                  borderRadius: "12px",
+                  padding: "10px 20px",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontSize: "15px",
+                  fontWeight: "500",
+                  transition: "all 0.2s",
+                }}
+              >
+                <FaHeart fill={liked ? "white" : "none"} />
+                {liked ? "Saved" : "Save Recipe"}
+              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <StarRating rating={Math.round(ratingData.avg_rating)} interactive={false} />
+                <span style={{ color: "rgba(255,255,255,0.9)", fontSize: "14px" }}>
+                  {ratingData.avg_rating > 0 ? ratingData.avg_rating.toFixed(1) : "0.0"}
+                  {ratingData.rating_count > 0 && ` (${ratingData.rating_count})`}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container py-5">
         <div className="recipe-detail-body">
+          <div className="recipe-detail-section">
+            <h3 className="recipe-detail-section-title">
+              <FaStar /> Rate This Recipe
+            </h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <StarRating rating={userRating} onRate={handleRate} interactive={!submittingRating} />
+              {userRating > 0 && (
+                <span style={{ color: "#7A4B32", fontSize: "14px" }}>
+                  You rated {userRating}/5
+                </span>
+              )}
+            </div>
+          </div>
+
           {ingredientsList.length > 0 && (
             <div className="recipe-detail-section">
               <h3 className="recipe-detail-section-title">

@@ -7,22 +7,25 @@ import RecipeDetail from "./pages/RecipeDetail";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { FavoritesProvider } from "./context/FavoritesContext";
 
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <FavoritesProvider>
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
 
-        <Route path="/recipes/:id" element={<RecipeDetail />} />
-        <Route path="/recipes" element={<Recipes />} />
+          <Route path="/recipes/:id" element={<RecipeDetail />} />
+          <Route path="/recipes" element={<Recipes />} />
 
-        <Route path="/add" element={<AddRecipe />} />
-      </Routes>
+          <Route path="/add" element={<AddRecipe />} />
+        </Routes>
 
-      <Footer />
+        <Footer />
+      </FavoritesProvider>
     </BrowserRouter>
   );
 }

@@ -21,7 +21,7 @@ func jsonError(w http.ResponseWriter, status int, msg string) {
 }
 
 func GetRecipes(w http.ResponseWriter, r *http.Request) {
-	recipes, err := models.GetAllRecipes()
+	recipes, err := models.GetAllRecipesWithRatings()
 	if err != nil {
 		jsonError(w, http.StatusInternalServerError, "Failed to fetch recipes")
 		return
