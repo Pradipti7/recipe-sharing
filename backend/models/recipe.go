@@ -15,6 +15,8 @@ type Recipe struct {
 	Image        string    `json:"image"`
 	Ingredients  string    `json:"ingredients"`
 	Steps        string    `json:"steps"`
+	AvgRating    float64   `json:"avg_rating"`
+	RatingCount  int       `json:"rating_count"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }

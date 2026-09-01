@@ -1,13 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { FaArrowLeft, FaListUl, FaBookOpen } from "react-icons/fa";
+import { FaArrowLeft, FaListUl, FaBookOpen, FaHeart, FaStar } from "react-icons/fa";
+import FavoritesContext from "../context/FavoritesContext";
+import pizzaImg from "../images/pizza.jpeg";
+import momoImg from "../images/momo.webp";
+import pastaImg from "../images/pasta.webp";
+import burgerImg from "../images/burger.jpeg";
+import butterChickenImg from "../images/butterChicken.jpeg";
+import vegetableStirFryImg from "../images/VegetableStirFry.jpeg";
+import greekSaladImg from "../images/greekSalad.jpeg";
+import chocolateLavaImg from "../images/chocolateLava.jpeg";
 
 const defaultRecipes = [
   {
     id: 1, title: "Classic Margherita Pizza",
     description: "A timeless Italian pizza with fresh mozzarella, tomato sauce, and basil on a crispy thin crust.",
-    image: "https://via.placeholder.com/800x450?text=Margherita+Pizza",
+    image: pizzaImg,
     category: "Italian",
     ingredients: "Pizza dough, San Marzano tomatoes, fresh mozzarella, fresh basil, extra virgin olive oil, salt",
     steps: "1. Preheat oven to 500\u00b0F (260\u00b0C) with a pizza stone.\n2. Stretch the dough into a 12-inch round on a floured surface.\n3. Spread a thin layer of crushed tomatoes, leaving a 1-inch border.\n4. Tear mozzarella into pieces and distribute evenly.\n5. Drizzle with olive oil and season with salt.\n6. Bake for 10-12 minutes until crust is golden and cheese is bubbly.\n7. Top with fresh basil leaves and serve immediately.",
@@ -15,7 +24,7 @@ const defaultRecipes = [
   {
     id: 2, title: "Spicy Chicken Momos",
     description: "Steamed dumplings filled with spicy minced chicken, served with tangy tomato achar.",
-    image: "https://via.placeholder.com/800x450?text=Chicken+Momos",
+    image: momoImg,
     category: "Asian",
     ingredients: "All-purpose flour, minced chicken, onion, garlic, ginger, green chili, soy sauce, sesame oil, Sichuan pepper, tomato achar",
     steps: "1. Make dough with flour, water, and a pinch of salt. Rest for 30 minutes.\n2. Mix minced chicken with chopped onion, garlic, ginger, green chili, soy sauce, and sesame oil.\n3. Roll dough into small circles and place filling in the center.\n4. Pleat and seal the edges to form momos.\n5. Steam in a steamer for 12-15 minutes.\n6. Serve hot with spicy tomato achar.",
@@ -23,7 +32,7 @@ const defaultRecipes = [
   {
     id: 3, title: "Creamy Garlic Pasta",
     description: "Al dente pasta tossed in a rich and creamy garlic parmesan sauce with herbs.",
-    image: "https://via.placeholder.com/800x450?text=Creamy+Garlic+Pasta",
+    image: pastaImg,
     category: "Italian",
     ingredients: "Fettuccine pasta, butter, garlic cloves, heavy cream, parmesan cheese, fresh parsley, salt, black pepper, nutmeg",
     steps: "1. Cook fettuccine in salted boiling water until al dente. Reserve 1 cup pasta water.\n2. Melt butter in a large pan over medium heat. Add minced garlic and saut\u00e9 for 1 minute.\n3. Pour in heavy cream and bring to a gentle simmer.\n4. Stir in grated parmesan until melted and sauce is smooth.\n5. Add drained pasta to the sauce and toss to coat.\n6. Season with salt, pepper, and a pinch of nutmeg.\n7. Garnish with fresh parsley and serve immediately.",
@@ -31,7 +40,7 @@ const defaultRecipes = [
   {
     id: 4, title: "Classic Gourmet Burger",
     description: "Juicy beef patty with lettuce, tomato, cheese, and special sauce in a toasted bun.",
-    image: "https://via.placeholder.com/800x450?text=Gourmet+Burger",
+    image: burgerImg,
     category: "American",
     ingredients: "Ground beef (80/20), brioche bun, cheddar cheese, lettuce, tomato, onion, pickles, special sauce (mayo + ketchup + relish)",
     steps: "1. Form ground beef into patties slightly wider than the buns. Season generously with salt and pepper.\n2. Cook on a hot grill or cast-iron skillet for 3-4 minutes per side for medium.\n3. Add cheddar cheese in the last minute and cover to melt.\n4. Toast the brioche buns on the grill for 30 seconds.\n5. Mix mayo, ketchup, and relish for the special sauce.\n6. Assemble: bottom bun, sauce, lettuce, patty with cheese, tomato, onion, pickles, top bun.\n7. Serve immediately with fries.",
@@ -39,7 +48,7 @@ const defaultRecipes = [
   {
     id: 5, title: "Butter Chicken",
     description: "Tender chicken pieces simmered in a rich, creamy tomato-based curry sauce.",
-    image: "https://via.placeholder.com/800x450?text=Butter+Chicken",
+    image: butterChickenImg,
     category: "Indian",
     ingredients: "Chicken thighs, yogurt, lemon juice, garam masala, turmeric, cumin, coriander, tomatoes, butter, cream, kasuri methi, ginger-garlic paste",
     steps: "1. Marinate chicken in yogurt, lemon juice, and spices for at least 1 hour.\n2. Grill or pan-fry marinated chicken until charred. Set aside.\n3. In a pan, melt butter and saut\u00e9 ginger-garlic paste.\n4. Add pureed tomatoes and cook until oil separates.\n5. Stir in garam masala, turmeric, cumin, and coriander.\n6. Add grilled chicken pieces and simmer for 10 minutes.\n7. Finish with cream and crushed kasuri methi. Serve with naan or rice.",
@@ -47,7 +56,7 @@ const defaultRecipes = [
   {
     id: 6, title: "Vegetable Stir Fry",
     description: "Fresh seasonal vegetables wok-fried in a savory soy and ginger glaze.",
-    image: "https://via.placeholder.com/800x450?text=Stir+Fry",
+    image: vegetableStirFryImg,
     category: "Asian",
     ingredients: "Broccoli, bell peppers, snap peas, carrots, mushrooms, garlic, ginger, soy sauce, sesame oil, cornstarch, rice vinegar",
     steps: "1. Cut all vegetables into bite-sized pieces.\n2. Mix soy sauce, rice vinegar, sesame oil, and cornstarch for the sauce.\n3. Heat a wok or large pan over high heat with oil.\n4. Stir-fry garlic and ginger for 30 seconds.\n5. Add harder vegetables (carrots, broccoli) first, cook 2 minutes.\n6. Add softer vegetables (peppers, snap peas, mushrooms), cook 2 more minutes.\n7. Pour sauce over vegetables and toss until coated and glossy.\n8. Serve over steamed rice.",
@@ -55,7 +64,7 @@ const defaultRecipes = [
   {
     id: 7, title: "Greek Salad",
     description: "Crisp cucumbers, tomatoes, olives, and feta cheese drizzled with olive oil and oregano.",
-    image: "https://via.placeholder.com/800x450?text=Greek+Salad",
+    image: greekSaladImg,
     category: "Mediterranean",
     ingredients: "Cucumber, tomatoes, red onion, Kalamata olives, feta cheese, extra virgin olive oil, red wine vinegar, dried oregano, salt",
     steps: "1. Chop cucumber, tomatoes, and red onion into chunks.\n2. Combine in a large bowl with Kalamata olives.\n3. Crumble feta cheese on top.\n4. Drizzle generously with extra virgin olive oil and red wine vinegar.\n5. Sprinkle with dried oregano and salt.\n6. Toss gently and serve fresh.",
@@ -63,17 +72,50 @@ const defaultRecipes = [
   {
     id: 8, title: "Chocolate Lava Cake",
     description: "Warm chocolate cake with a gooey molten center, served with vanilla ice cream.",
-    image: "https://via.placeholder.com/800x450?text=Lava+Cake",
+    image: chocolateLavaImg,
     category: "Dessert",
     ingredients: "Dark chocolate (70%), butter, eggs, sugar, flour, vanilla extract, cocoa powder, pinch of salt",
     steps: "1. Melt chocolate and butter together over a double boiler.\n2. Whisk eggs and sugar until light and fluffy.\n3. Fold the chocolate mixture into the eggs.\n4. Gently fold in flour, cocoa powder, and salt.\n5. Pour into buttered and cocoa-dusted ramekins.\n6. Bake at 425\u00b0F (220\u00b0C) for 12-14 minutes.\n7. Let cool for 1 minute, then invert onto plates.\n8. Serve immediately with vanilla ice cream.",
   },
 ];
 
+function StarRating({ rating, onRate, interactive }) {
+  const [hovered, setHovered] = useState(0);
+
+  return (
+    <div style={{ display: "flex", gap: "4px" }}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => interactive && onRate(star)}
+          onMouseEnter={() => interactive && setHovered(star)}
+          onMouseLeave={() => interactive && setHovered(0)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: interactive ? "pointer" : "default",
+            padding: "2px",
+            fontSize: "24px",
+            color: star <= (hovered || rating) ? "#E8A33D" : "#ddd",
+            transition: "color 0.15s",
+          }}
+        >
+          <FaStar />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function RecipeDetail() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [ratingData, setRatingData] = useState({ avg_rating: 0, rating_count: 0 });
+  const [userRating, setUserRating] = useState(0);
+  const [submittingRating, setSubmittingRating] = useState(false);
+  const { toggleFavorite, isFavorite } = useContext(FavoritesContext);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,6 +126,7 @@ function RecipeDetail() {
       .then((res) => {
         if (!cancelled) {
           setRecipe(res.data);
+          setRatingData({ avg_rating: res.data.avg_rating || 0, rating_count: res.data.rating_count || 0 });
           setLoading(false);
         }
       })
@@ -95,11 +138,38 @@ function RecipeDetail() {
         }
       });
 
+    axios
+      .get(`/api/recipes/${id}/rating`, { signal: controller.signal })
+      .then((res) => {
+        if (!cancelled) setRatingData(res.data);
+      })
+      .catch(() => {});
+
     return () => {
       cancelled = true;
       controller.abort();
     };
   }, [id]);
+
+  const handleRate = (rating) => {
+    if (submittingRating) return;
+    setSubmittingRating(true);
+    setUserRating(rating);
+
+    axios
+      .post(`/api/recipes/${id}/rating`, { rating })
+      .then((res) => {
+        setRatingData(res.data);
+        setSubmittingRating(false);
+      })
+      .catch(() => {
+        setSubmittingRating(false);
+        setRatingData((prev) => ({
+          avg_rating: rating,
+          rating_count: prev.rating_count + 1,
+        }));
+      });
+  };
 
   if (loading) {
     return (
@@ -128,6 +198,8 @@ function RecipeDetail() {
     ? recipe.steps.split("\n").map((s) => s.trim()).filter(Boolean)
     : [];
 
+  const liked = isFavorite(recipe.id);
+
   return (
     <div className="recipe-detail-page">
       <div className="recipe-detail-hero" style={{ backgroundImage: `url(${recipe.image || "https://via.placeholder.com/800x450?text=No+Image"})` }}>
@@ -140,12 +212,57 @@ function RecipeDetail() {
             {recipe.category && <span className="recipe-detail-category">{recipe.category}</span>}
             <h1 className="recipe-detail-title">{recipe.title}</h1>
             <p className="recipe-detail-desc">{recipe.description}</p>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "20px", marginTop: "16px", flexWrap: "wrap" }}>
+              <button
+                onClick={() => toggleFavorite(recipe.id)}
+                style={{
+                  background: liked ? "#D64B3E" : "rgba(255,255,255,0.2)",
+                  border: "2px solid rgba(255,255,255,0.5)",
+                  borderRadius: "12px",
+                  padding: "10px 20px",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontSize: "15px",
+                  fontWeight: "500",
+                  transition: "all 0.2s",
+                }}
+              >
+                <FaHeart fill={liked ? "white" : "none"} />
+                {liked ? "Saved" : "Save Recipe"}
+              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <StarRating rating={Math.round(ratingData.avg_rating)} interactive={false} />
+                <span style={{ color: "rgba(255,255,255,0.9)", fontSize: "14px" }}>
+                  {ratingData.avg_rating > 0 ? ratingData.avg_rating.toFixed(1) : "0.0"}
+                  {ratingData.rating_count > 0 && ` (${ratingData.rating_count})`}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container py-5">
         <div className="recipe-detail-body">
+          <div className="recipe-detail-section">
+            <h3 className="recipe-detail-section-title">
+              <FaStar /> Rate This Recipe
+            </h3>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <StarRating rating={userRating} onRate={handleRate} interactive={!submittingRating} />
+              {userRating > 0 && (
+                <span style={{ color: "#7A4B32", fontSize: "14px" }}>
+                  You rated {userRating}/5
+                </span>
+              )}
+            </div>
+          </div>
+
           {ingredientsList.length > 0 && (
             <div className="recipe-detail-section">
               <h3 className="recipe-detail-section-title">

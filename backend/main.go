@@ -45,6 +45,8 @@ func main() {
 		r.Get("/recipes/{id}", handlers.GetRecipe)
 		r.Put("/recipes/{id}", handlers.UpdateRecipe)
 		r.Delete("/recipes/{id}", handlers.DeleteRecipe)
+		r.Get("/recipes/{id}/rating", handlers.GetRecipeRating)
+		r.Post("/recipes/{id}/rating", handlers.CreateRating)
 	})
 
 	port := os.Getenv("PORT")
