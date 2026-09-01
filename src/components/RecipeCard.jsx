@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function RecipeCard({ recipe }) {
   return (
     <div
@@ -34,8 +36,9 @@ function RecipeCard({ recipe }) {
           {recipe.description}
         </p>
 
-        <button
-          className="btn mt-auto"
+        <Link
+          to={`/recipes/${recipe.id}`}
+          className="btn mt-auto text-decoration-none"
           style={{
             background: "#D64B3E",
             color: "white",
@@ -43,7 +46,7 @@ function RecipeCard({ recipe }) {
           }}
         >
           View Recipe
-        </button>
+        </Link>
       </div>
     </div>
   );
